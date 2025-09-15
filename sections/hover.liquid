@@ -1,0 +1,2160 @@
+{% comment %} === HOVER EXERCICE SECTION PERSONNALISÉ === {% endcomment %}
+
+{% comment %} ===== VARIABLE POUR VARIANTES DU PRODUIT ===== {% endcomment %}
+{% assign variant_1_month = product.variants[0] %}
+{% assign variant_2_month = product.variants[1] %}
+
+{% assign price_1_raw = variant_1_month.price | divided_by: 100.0 | divided_by: 30 %}
+{% assign price_1_truncated = price_1_raw | times: 100 | floor | divided_by: 100.0 %}
+
+{% assign price_2_raw = variant_2_month.price | divided_by: 100.0 | divided_by: 60 %}
+{% assign price_2_truncated = price_2_raw | times: 100 | floor | divided_by: 100.0 %}
+
+{% comment %} ===== CSS ===== {% endcomment %}
+<style>
+
+    {% comment %} FONTS {% endcomment %}
+
+    @font-face {
+        font-family: 'Gotham';
+        src: url('{{ "gothambook-webfont.woff" | asset_url }}') format('woff');
+        font-weight: 400;
+        font-display: swap;
+        font-style: normal;
+    }
+
+    @font-face {
+        font-family: 'Gotham';
+        src: url('{{ "gothammedium-webfont.woff" | asset_url }}') format('woff');
+        font-weight: 500;
+        font-display: swap;
+        font-style: normal;
+    }
+
+    @font-face {
+        font-family: 'Gotham';
+        src: url('{{ "gothambold-webfont.woff" | asset_url }}') format('woff');
+        font-weight: 700;
+        font-display: swap;
+    }
+
+
+    :root {
+        --font-gotham: 'Gotham', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+        --transition-smooth: all 0.3s ease;
+        --transition-transform: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+
+
+
+    {% comment %} SECTION PRINCIPALE {% endcomment %}
+    .hoover-section {
+        padding: clamp(20px, 5.56vw, 80px);
+        max-width: 1440px;
+        margin: 0 auto;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .product-layout {
+        display: flex;
+        gap: clamp(20px, 2.78vw, 45px);
+        align-items: flex-start;
+        width: 100%;
+    }
+
+    {% comment %} IMAGES - SECTION DE GAUCHE {% endcomment %}
+
+    .product-images-section {
+        flex: 1.2;
+        max-width: 100%;
+        min-width: 0;
+
+    }
+
+    .mobile-full-carousel {
+        display: none;
+    }
+
+    {% comment %} IMAGE PRINCIPALE {% endcomment %}
+    .product-main-image {
+        margin-bottom: clamp(20px, 0.69vw, 40px);
+        width: 100%;
+        aspect-ratio: 1.03;
+        max-width: min(100%, 677px);
+
+        border-radius: clamp(15px, 2.08vw, 30px);
+        overflow: hidden;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+        transition: var(--transition-smooth);
+
+    }
+
+    .product-main-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: var(--transition-transform);
+        border-radius: 0;
+        box-shadow: none;
+        image-rendering: crisp-edges;
+        display: block;
+        will-change: transform;
+    }
+
+    {% case section.settings.hover_main_img_style %}
+
+    {%  when 'lift_effect' %}
+
+    .product-main-image:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 16px 48px rgba(0,0,0,0.15);
+    }
+
+    .product-main-image img:hover {
+        transform: none;
+    }
+
+    {% when 'zoom' %}
+
+    .product-main-image img:hover {
+        transform: scale(1.05);
+    }
+
+
+    .product-main-image:hover {
+        transform: none;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+    }
+
+    {% else %}
+
+    .product-main-image img:hover {
+        transform: none;
+    }
+
+    .product-main-image:hover {
+        transform: none;
+    }
+    {% endcase %}
+    .image-container {
+        position: relative;
+        width: 100%;
+        height: 100%;
+    }
+
+    /*   badge image principale   */
+    .text-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+    }
+
+
+    .badge {
+        position: absolute;
+        background: {{ section.settings.badge_color }};
+        color: {{ section.settings.badge_text_color }};
+        padding: clamp(4px, 0.56vw, 8px) clamp(8px, 1.11vw, 16px);
+        height: clamp(27px, 2.36vw, 34px);
+        width: clamp(107px, 9.17vw, 150px);
+        border-radius: clamp(10px, 1.39vw, 20px);
+        font: 500 clamp(10px, 0.83vw, 12px) var(--font-gotham);
+        box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        pointer-events: auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        white-space: nowrap;
+    }
+
+    .top-left {
+        top: clamp(8px, 1.04vw, 15px);
+        left: clamp(8px, 1.04vw, 15px);
+    }
+
+
+    {% comment %} IMAGES GALLERIE{% endcomment %}
+    .product-gallery {
+        width: 100%;
+
+    }
+
+    .gallery-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: clamp(10px, 1.39vw, 20px);
+        width: 100%;
+    }
+
+    .gallery-item {
+        width: 100%;
+        aspect-ratio: 1;
+        border-radius: clamp(15px, 2.08vw, 30px);
+        box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+        overflow: hidden;
+    {% case section.settings.hover_gallery_style %}
+    {% when 'inherit' %}
+    {% case section.settings.hover_main_img_style %}
+    {% when 'lift_effect' %}
+        transition: var(--transition-smooth);
+    {% when 'zoom' %}
+        transition: var(--transition-smooth);
+    {% else %}
+        transition: none;
+    {% endcase %}
+    {% when 'lightness_zoom' %}
+        transition: var(--transition-transform);
+    {% when 'zoom' %}
+        transition: var(--transition-transform);
+    {% else %}
+        transition: none;
+    {% endcase %}
+    }
+
+    .gallery-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        cursor: pointer;
+        display: block;
+        will-change: auto;
+        border-radius: 0;
+        box-shadow: none;
+
+    {% case section.settings.hover_gallery_style %}
+    {% when 'inherit' %}
+
+    {% case section.settings.hover_main_img_style %}
+    {% when 'lift_effect' %} transition: none; {% when 'zoom' %}  transition: var(--transition-transform); {% else %} transition: none;
+    {% endcase %}
+    {% when 'lightness_zoom' %} transition: var(--transition-transform); filter: brightness(0.96) saturate(1.05); {% when 'zoom' %} transition: var(--transition-transform);filter: none;{% else %} transition: none;filter: none;
+    {% endcase %}
+    }
+
+
+    {% case section.settings.hover_gallery_style %}
+    {% when 'inherit' %}
+
+    {% case section.settings.hover_main_img_style %}
+    {% when 'lift_effect' %}
+    .gallery-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 38px rgba(0,0,0,0.16);
+
+    }
+    .gallery-item img:hover {
+        transform: none;
+    }
+    {% when 'zoom' %}
+    .gallery-item img:hover {
+        transform: scale(1.03);
+    }
+    .gallery-item:hover {
+        transform: none;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+    }
+    {% else %}
+    .gallery-item img:hover {
+        transform: none;
+    }
+    .gallery-item:hover {
+        transform: none;
+    }
+    {% endcase %}
+
+    {% when 'lightness_zoom' %}
+    .gallery-item img:hover {
+        transform: scale(1.03);
+        filter: brightness(1.06) saturate(1.2);
+    }
+
+    {% when 'zoom' %}
+    .gallery-item img:hover {
+        transform: scale(1.05);
+        filter: none;
+    }
+    .gallery-item:hover {
+        transform: none;
+    }
+
+    {% else %}
+    .gallery-item img:hover {
+        transform: none;
+    }
+    .gallery-item:hover {
+        transform: none;
+    }
+    {% endcase %}
+
+    .gallery-item img:hover {
+        will-change: transform;
+    }
+
+    {% comment %}  INFORMATIONS PRODUITS - SECTION DROITE {% endcomment %}
+
+
+
+    {% comment %}  SECTION PRINCIPALE {% endcomment %}
+    .product-info-section {
+        flex: 1;
+        width: 100%;
+        max-width: clamp(400px, 38.89vw, 560px);
+        min-width: clamp(300px, 27.78vw, 400px);
+        padding-top: clamp(10px, 1.39vw, 20px);
+    }
+
+
+    {% comment %}  HEADER {% endcomment %}
+
+    .notice-header {
+        gap: clamp(5px, 0.69vw, 14px);
+        display: flex;
+        align-items: center;
+        margin-bottom: clamp(10px, 1.39vw, 20px);
+    }
+
+    .notice-text {
+        color: #1A1A1A;
+        font: 500 clamp(12px, 0.97vw, 14px) var(--font-gotham);
+        margin: 0;
+    }
+
+    .trustpilot-notice-img,
+    .trustpilot-logo-img {
+        height: auto;
+        max-width: 100%;
+    }
+
+    .product-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        margin-bottom: clamp(15px, 2.08vw, 30px);
+        flex-wrap: wrap;
+        gap: clamp(10px, 1.39vw, 20px);
+    }
+
+    .product-title {
+        margin: 0;
+        color: {{ section.settings.title_color }};
+        font: 700 clamp(24px, 2.64vw, 38px)/1.3  var(--font-gotham);
+        flex: 1;
+        min-width: 200px;
+    }
+
+    .product-pricing {
+        text-align: right;
+        flex-shrink: 0;
+    }
+
+    .product-price {
+        font: 700 clamp(16px, 1.39vw, 20px)  var(--font-gotham);
+        color: {{ section.settings.price_color }};
+        margin: 0;
+    }
+
+    .product-compare-price {
+        font-size: clamp(14px, 1.11vw, 16px);
+        margin: 5px 0 0 0;
+    }
+
+    .original-price {
+        text-decoration: line-through;
+        color: #999;
+        margin-right: 10px;
+    }
+
+    .discount {
+        background-color: #e74c3c;
+        color: white;
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-size: 0.9em;
+    }
+
+    {% comment %} DESCRIPTION  {% endcomment %}
+    .product-description {
+        margin-bottom: clamp(20px, 2.08vw, 30px);
+        width: 100%;
+    }
+
+    .description-content {
+        width: 100%;
+
+    }
+
+    .description-text {
+        width: 100%;
+    }
+
+    .description-text p {
+        margin-top: 0;
+        margin-bottom: clamp(10px, 1.04vw, 14px);
+        margin-right: 0;
+
+    }
+
+
+    /*  Check List   */
+
+    .features-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .feature-item {
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: clamp(3px, 0.35vw, 5px);
+    }
+
+    .feature-text {
+
+        line-height: 1.5;
+        margin: 0;
+        flex: 1;
+    }
+
+    .description-text p,
+    .feature-text {
+        font: 400 {{ section.settings.description_text_size }}/1.5 var(--font-gotham);
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-rendering: optimizeLegibility;
+        color: {{ section.settings.description_content }};
+    }
+
+
+    .checkmark-img {
+
+    {% assign base_size = section.settings.description_text_size | remove: 'px' | plus: 0 %}
+    {% assign min_width = base_size | times: 1.0 | round: 1 %}
+    {% assign max_width = base_size | times: 1.4 | round: 1 %}
+    {% assign min_height = base_size | times: 0.75 | round: 1 %}
+    {% assign max_height = base_size | times: 1.05 | round: 1 %}
+    {% assign margin_right = base_size | times: 0.6 | round: 1 %}
+
+        width: clamp({{ min_width }}px, {{ base_size | times: 0.1 }}vw, {{ max_width }}px);
+        height: clamp({{ min_height }}px, {{ base_size | times: 0.075 }}vw, {{ max_height }}px);
+        margin-top: 4px;
+        margin-right: clamp({{ margin_right }}px, 0.69vw, {{ margin_right | times: 1.2 | round: 1 }}px);
+        flex-shrink: 0;
+        transition: transform 0.2s ease;
+    }
+
+    .feature-item:hover .checkmark-img {
+        transform: scale(1.1);
+    }
+
+    {% comment %}  BOUTONS CHOIX DE VARIANTES {% endcomment %}
+    .pricing-container {
+        display: flex;
+        width: 100%;
+        gap: clamp(15px, 1.39vw, 20px);
+        margin: clamp(20px, 2.08vw, 30px) 0;
+    }
+
+    .pricing-card {
+        background: #ffffff;
+        border-radius: clamp(12px, 1.04vw, 15px);
+        border: 1px solid #9A9A9A26;
+        padding: clamp(15px, 1.39vw, 20px) clamp(10px, 1.04vw, 15px);
+        position: relative;
+        flex: 1;
+        min-width: 150px;
+        height: clamp(80px, 6.88vw, 99px);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        cursor: pointer;
+        transition: var(--transition-smooth);
+    }
+
+    .pricing-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    }
+
+    .pricing-card.selected {
+        background: {{ section.settings.card_variant_background_hover_color }};
+    }
+
+    .pricing-card.selected > .card-badge {
+
+        background: {{ section.settings.card_badge_variant_background_hover_color }};
+    }
+
+    .card-badge {
+        background: #F3F3F3;
+        color : {{ section.settings.card_badge_variant_text_color }};
+        min-width: clamp(60px, 5.56vw, 80px);
+        height: clamp(18px, 1.67vw, 24px);
+        border-radius: 100px;
+        padding: 4px clamp(8px, 0.83vw, 12px);
+        font: 500 clamp(10px, 0.9vw, 13px) var(--font-gotham);
+        position: absolute;
+        top: clamp(-12px, -0.83vw, -8px);
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        white-space: nowrap;
+        transition: var(--transition-smooth);
+    }
+
+    .discount-badge {
+        background: #000000;
+        color: white;
+        padding: 1px 8px;
+        border-radius: 10px;
+        font: 500 clamp(10px, 0.69vw, 12px)/1.5 var(--font-gotham);
+        display: inline-block;
+        margin-bottom: 0;
+        margin-right: 5px;
+        vertical-align: baseline; /* Ajoutez cette ligne pour forcer l'alignement */
+        position: relative; /* Ajoutez cette ligne */
+        top: 0; /* Ajoutez cette ligne pour réinitialiser toute position */
+    }
+
+
+
+
+
+    .duration {
+
+        font: 700 clamp(16px, 1.39vw, 20px)/1  var(--font-gotham);
+        color : {{ section.settings.card_badge_variant_text_color }};
+        margin: 0;
+        text-align: center;
+    }
+
+    .price {
+
+        color: #787878;
+        font: 400 clamp(9px, 0.76vw, 11px)/1.5 var(--font-gotham);
+        margin: 2px 0 0 0;
+        text-align: center;
+    }
+
+    .content {
+        margin-top: clamp(8px, 0.83vw, 12px);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        width: 100%;
+    }
+
+    .duration-row {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 2px;
+    }
+
+    {% comment %} BOUTON PANIER {% endcomment %}
+    .product-buy-section {
+        margin-bottom: clamp(20px, 2.08vw, 30px);
+    }
+
+    .buy-form {
+        display: block;
+    }
+
+    .buy-button {
+        width: 100%;
+        height: clamp(60px, 5.28vw, 76px);
+        background-color: {{ section.settings.buy_button_color }};
+        color: {{ section.settings.buy_button_text_color }};
+        border: none;
+        border-radius: {{ section.settings.buy_button_border_radius }}px;
+        font: 700 clamp(16px, {{ section.settings.buy_button_text_size | divided_by: 1440.0 | times: 100 }}vw, {{ section.settings.buy_button_text_size }}px)  var(--font-gotham);
+        cursor: pointer;
+        transition: var(--transition-smooth);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: clamp(5px, 0.49vw, 7px);
+    }
+
+
+
+    {% if section.settings.enable_buy_button_hover %}
+    .buy-button:hover {
+        background-color: {{ section.settings.buy_button_hover_color }};
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        color: {{ section.settings.buy_button_hover_text_color }};
+    }
+    {% else %}
+
+    .buy-button:hover {
+        background-color: {{ section.settings.buy_button_color }};
+        color: {{ section.settings.buy_button_text_color }};
+        transform: none;
+        box-shadow: none;
+    }
+    .buy-button {
+        transition: none;
+    }
+    {% endif %}
+
+
+
+
+    .buy-button:disabled {
+        background-color: #414141;
+        cursor: not-allowed;
+        opacity: 0.6;
+        transform: none;
+        color: #FFFFFF;
+    }
+
+    .button-separator {
+        opacity: 0.7;
+        font-weight: normal;
+    }
+
+    .button-price {
+
+        white-space: nowrap;
+    }
+
+    {% comment %} TEXTE SOUS BOUTON D'ACHAT {% endcomment %}
+
+
+    .product-details {
+        text-align: {{ section.settings.stock_text_position }};
+        width: 100%;
+        margin-top: clamp(10px, 1.04vw, 15px);
+
+    }
+
+    .product-details p {
+
+
+        font: 500 clamp(10px, 0.97vw, 14px)/1.5 var(--font-gotham);
+        color: #171714;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-rendering: optimizeLegibility;
+
+
+    }
+
+    {% comment %} ACCORDION {% endcomment %}
+    .accordion-container {
+        width: 100%;
+        margin: 0;
+        background: none;
+        padding: clamp(15px, 1.39vw, 20px) 0;
+        overflow: visible;
+    }
+
+
+
+    .accordion-item {
+        border-bottom: 1px solid {{ section.settings.accordion_border_color | default: '#F3F3F3' }};
+    }
+
+    .accordion-item:first-child {
+        border-top: 1px solid {{ section.settings.accordion_border_color | default: '#F3F3F3' }};
+    }
+
+    .accordion-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: clamp(18px, 1.67vw, 24px) clamp(20px, 1.94vw, 28px);
+        cursor: pointer;
+        background: none;
+        transition: background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        border: none;
+        width: 100%;
+        text-align: left;
+    }
+
+    .accordion-title {
+        margin: 0;
+        color: {{ section.settings.accordion_title_color | default: '#171714' }};
+    {% case section.settings.accordion_title_size %}
+    {% when '14px' %}
+        font-size: clamp(12px, 0.97vw, 14px);
+    {% when '16px' %}
+        font-size: clamp(14px, 1.11vw, 16px);
+    {% when '18px' %}
+        font-size: clamp(16px, 1.25vw, 18px);
+    {% else %}
+        font-size: clamp(14px, 1.11vw, 16px);
+    {% endcase %}
+        font-family: var(--font-gotham);
+        font-weight: 400;
+        line-height: 1.5;
+    }
+
+    .accordion-icon {
+        width: clamp(20px, 1.67vw, 24px);
+        height: clamp(20px, 1.67vw, 24px);
+        transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        flex-shrink: 0;
+    }
+
+    .accordion-item.active .accordion-icon {
+        transform: rotate(180deg);
+    }
+
+    .accordion-content {
+        overflow: hidden;
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        background: none;
+        height: 0;
+
+    }
+
+    .accordion-item.active .accordion-content {
+        height: auto;
+    }
+
+    .accordion-body {
+        padding: 0 clamp(20px, 1.94vw, 28px) clamp(18px, 1.67vw, 24px) clamp(20px, 1.94vw, 28px);
+
+        color: {{ section.settings.accordion_content_color | default: '#171714' }};
+    {% case section.settings.accordion_content_size %}
+    {% when '12px' %}
+        font-size: clamp(10px, 0.83vw, 12px);
+    {% when '14px' %}
+        font-size: clamp(12px, 0.97vw, 14px);
+    {% when '16px' %}
+        font-size: clamp(14px, 1.11vw, 16px);
+    {% else %}
+        font-size: clamp(12px, 0.97vw, 14px);
+    {% endcase %}
+        font-family:  var(--font-gotham);
+        font-weight: 400;
+        line-height: 1.5;
+    }
+
+    {% comment %} ERREUR STYLE {% endcomment %}
+    .no-image, .no-product {
+        background-color: #f0f0f0;
+        padding: clamp(30px, 2.78vw, 40px);
+        text-align: center;
+        border-radius: 8px;
+        color: #666;
+    }
+
+    {% comment %} RESPONSIVE DESKTOP {% endcomment %}
+    @media (max-width: 1200px) {
+        .product-layout {
+            gap: clamp(20px, 2.5vw, 30px);
+        }
+    }
+
+    @media (max-width: 900px) {
+        .product-info-section {
+            min-width: 280px;
+        }
+
+        .buy-button {
+            font-size: clamp(14px, 1.56vw, 18px);
+        }
+    }
+
+
+    {% comment %} MOBILE {% endcomment %}
+    @media (max-width: 768px) {
+        .hoover-section {
+            padding: 0;
+            max-width: 100%;
+        }
+
+        .product-layout {
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .product-images-section {
+            order: 1;
+        }
+
+        .product-info-section {
+            order: 2;
+            padding: 0 20px;
+            max-width: 100%;
+            min-width: auto;
+        }
+
+
+        .notice-header,
+        .product-header,
+        .product-description,
+        .pricing-container,
+        .buy-button,
+        .product-details,
+        .accordion-container {
+            margin-left: 0;
+            margin-right: 0;
+        }
+
+        .product-header {
+            margin-bottom: 20px;
+        }
+
+        .product-title {
+            font-size: 26px;
+            line-height: 1.4;
+        }
+
+        .product-price {
+            font-size: 16px;
+        }
+
+        .notice-text {
+            font-size: 12px;
+        }
+
+
+
+
+
+
+        .pricing-container {
+            gap: 15px;
+            margin: 25px 0;
+        }
+
+        .pricing-card {
+            height: 90px;
+            padding: 20px 10px 15px;
+            width: calc(50% - 7.5px);
+            min-width: unset;
+            max-width: unset;
+        }
+
+        .duration {
+            font-size: 18px;
+        }
+
+        .price {
+            white-space: nowrap; /* Empêche le retour à la ligne */
+            overflow: hidden; /* Cache le débordement si nécessaire */
+            text-overflow: ellipsis; /* Ajoute ... si le texte est trop long */
+        }
+
+        .content {
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .card-badge {
+            font-size: 11px;
+            min-width: 70px;
+            height: 20px;
+            top: -10px;
+        }
+
+        .buy-button {
+            height: 60px;
+            font-size: 14px;
+            transition: none;
+        }
+
+
+        .buy-button:hover {
+            transform: none;
+            box-shadow: none;
+        }
+
+        .product-details p {
+
+            font-size: clamp(9px, 2.5vw, 12px);
+            line-height: 1.4;
+            padding: 0 5px;
+
+        }
+
+        .accordion-header {
+            padding: 18px 20px;
+        }
+
+        .accordion-title {
+            font-size: {{ section.settings.accordion_title_size | default: '14px' }};
+        }
+
+
+        .accordion-body {
+            padding: 0 20px 20px 20px;
+            font-size: {{ section.settings.accordion_content_size | default: '12px' }};
+        }
+
+
+        .desktop-images {
+            display: none !important;
+        }
+
+        .mobile-full-carousel {
+            display: block;
+            width: 100%;
+            position: relative;
+        }
+
+        .carousel-scroll-container {
+            display: flex;
+            overflow-x: auto;
+            scroll-behavior: smooth;
+            scroll-snap-type: x proximity;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            gap: 5px;
+
+            contain: layout style;
+        }
+
+        .carousel-scroll-container::-webkit-scrollbar {
+            display: none;
+            contain: layout;
+        }
+
+        .carousel-slide {
+            flex: 0 0 auto;
+            width: calc(100vw - 32px);
+            aspect-ratio: 1 / 1.03;
+            height: auto;
+            scroll-snap-align: start;
+            position: relative;
+            overflow: hidden;
+        }
+
+
+
+        .carousel-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .mobile-badge {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: {{ section.settings.badge_color }};
+            color: {{ section.settings.badge_text_color }};
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.3);
+            z-index: 10;
+        }
+
+        .carousel-dots {
+            margin-top: 12px;
+            padding: 0 16px;
+            --bar: 0%;
+            --thumb: 0px;
+        }
+
+
+
+        .progress-bar-container {
+            width: 100%;
+            height: 3px;
+            background: rgba(0,0,0,0.15);
+            border-radius: 100px;
+            position: relative;
+            overflow: visible;
+            cursor: pointer;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            border-radius: 100px;
+            transition: width 0.2s ease-out;
+            width: 0%;
+        }
+
+        .progress-thumb {
+            position: absolute;
+            top: 50%;
+            left: 0%;
+            width: 66px;
+            height: 3px;
+            border-radius: 100px;
+            background: #000000;
+            opacity: 1;
+            transform: translate(0, -50%);
+            pointer-events: none;
+            z-index: 2;
+            transition: left 0.1s ease-out;
+            max-width: calc(100% - 0px);
+        }
+
+
+
+
+        .product-info-section[data-mobile-align="center"] > *,  .notice-header[data-mobile-align="center"]  {
+            margin-left: auto;
+            margin-right: auto;
+            text-align: center;
+            justify-content: center;
+        }
+
+        /* Alignement contenu mobile */
+        .product-info-section[data-mobile-align="center"] .product-header {
+            width: fit-content;
+            text-align: left;
+        }
+
+
+        .product-info-section[data-mobile-align="center"] .product-title {
+            text-align: left;
+        }
+
+        .product-info-section[data-mobile-align="center"] .product-pricing {
+            text-align: right;
+        }
+
+        .product-info-section[data-mobile-align="center"] .accordion-body {
+            text-align: left;
+        }
+
+        .product-info-section[data-mobile-align="center"] .accordion-title {
+            text-align: left;
+        }
+
+
+        .check-list[data-mobile-align="center"] .features-list {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .check-list[data-mobile-align="center"] .feature-item {
+            justify-content: center;
+            text-align: center;
+        }
+
+
+
+
+        /*  CAROUSEL IMAGES MOBILE  */
+
+
+        .carousel-dots .progress-bar-container {
+            position: relative !important;
+            overflow: visible !important;
+            height: 3px !important;
+            border-radius: 100px !important;
+        }
+
+        .carousel-dots .progress-bar {
+            position: absolute !important;
+            left: 0;
+            top: 0;
+            height: 100% !important;
+            width: var(--bar, 0%);
+            z-index: 1 !important;
+            border-radius: 100px !important;
+            background: rgba(0,0,0,0.7) !important;
+        }
+
+        .carousel-dots .progress-thumb {
+            position: absolute !important;
+            display: block !important;
+            left: var(--thumb) !important;
+            top: 50% !important;
+            width: 66px !important;
+            height: 3px !important;
+            border-radius: 100px !important;
+            background: #000 !important;
+            opacity: 1 !important;
+            transform: translate(0, -50%) !important;
+            z-index: 5 !important;
+            pointer-events: none !important;
+            border: none !important;
+            box-shadow: none !important;
+
+        }
+
+        .carousel-dots .progress-thumb,
+        .carousel-dots .progress-bar {
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+
+    }
+
+    @media (max-width: 480px) {
+        .product-info-section {
+            padding: 0 15px;
+        }
+
+        .product-title {
+            font-size: 22px;
+        }
+
+        .pricing-card {
+            height: 90px;
+            padding: 15px 8px;
+        }
+
+        .duration {
+            font-size: 16px;
+        }
+
+        .discount-badge {
+            margin-right: 2px;
+        }
+
+        .price {
+            font-size: 9px;
+        }
+        .product-details p {
+            font-size: 8px;
+            line-height: 1;
+            padding: 0 10px;
+        }
+
+
+    }
+
+
+
+
+    @media (prefers-reduced-motion: reduce) {
+        .product-main-image img:hover,
+        .pricing-card:hover { transform: none; box-shadow: none; }
+    }
+</style>
+
+{% comment %} ===== HTML ===== {% endcomment %}
+<section class="hoover-section">
+    {% if section.settings.featured_product != blank %}
+        {% assign product = section.settings.featured_product %}
+
+        {% comment %} Ensuite, sécurise la récupération des variantes {% endcomment %}
+        {% if product and product.variants.size >= 2 %}
+            {%- assign v1 = product.variants | where: 'title', '1 mois' | first -%}
+            {%- assign v2 = product.variants | where: 'title', '2 mois' | first -%}
+            {%- assign variant_1_month = v1 | default: product.variants[0] -%}
+            {%- assign variant_2_month = v2 | default: product.variants[1] -%}
+        {% endif %}
+
+        <article class="product-layout">
+
+            <!-- ===== IMAGES ===== -->
+            <div class="product-images-section">
+
+                <!-- DESKTOP -->
+                <div class="desktop-images">
+                    <!-- Image Principale -->
+                    <div class="product-main-image">
+                        {% if product.featured_image != blank %}
+                            <div class="image-container">
+                                <img
+                                        src="{{ product.featured_image | image_url: width: 1200 }}"
+                                        srcset="
+                    {{ product.featured_image | image_url: width: 480 }} 480w,
+                    {{ product.featured_image | image_url: width: 800 }} 800w,
+                    {{ product.featured_image | image_url: width: 1200 }} 1200w,
+                    {{ product.featured_image | image_url: width: 1600 }} 1600w
+                  "
+                                        width="1200"
+                                        height="{{ 1200 | divided_by: product.featured_image.aspect_ratio | round }}"
+                                        alt="{{ product.featured_image.alt | default: product.title }}"
+                                        fetchpriority="high"
+                                        decoding="async"
+                                        loading="eager">
+
+                                <!-- Badge texte pour l'image -->
+                                <div class="text-overlay">
+                                    {% if section.settings.show_badge and section.settings.badge_text != blank %}
+                                        <div class="badge top-left">
+                                            {{ section.settings.badge_text }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="no-image">Aucune image pour ce produit</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Gallerie d'images -->
+                    {% if product.images.size > 1 %}
+                        <div class="product-gallery">
+                            <div class="gallery-grid">
+                                {% for image in product.images limit: section.settings.max_images %}
+                                    {% unless forloop.first %}
+                                        <div class="gallery-item">
+                                            <img
+                                                    src="{{ image | image_url: width: 800 }}"
+                                                    srcset="
+                        {{ image | image_url: width: 480 }} 480w,
+                        {{ image | image_url: width: 800 }} 800w,
+                        {{ image | image_url: width: 1200 }} 1200w,
+                        {{ image | image_url: width: 1600 }} 1600w"
+                                                    sizes="(max-width: 768px) 100vw, 50vw"
+                                                    width="800"
+                                                    height="{{ 800 | divided_by: image.aspect_ratio | round }}"
+                                                    alt="{{ image.alt | default: product.title }}"
+                                                    loading="lazy"
+                                                    decoding="async">
+                                        </div>
+                                    {% endunless %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Carousel image pour mobile -->
+                <div class="mobile-full-carousel">
+                    <div class="carousel-scroll-container" id="carouselScrollContainer">
+                        <!-- Featured image first -->
+                        {% if product.featured_image != blank %}
+                            <div class="carousel-slide">
+                                <img
+                                        src="{{ product.featured_image | image_url: width: 800 }}"
+                                        srcset="
+                    {{ product.featured_image | image_url: width: 480 }} 480w,
+                    {{ product.featured_image | image_url: width: 800 }} 800w,
+                    {{ product.featured_image | image_url: width: 1200 }} 1200w"
+                                        sizes="100vw"
+                                        width="800"
+                                        height="{{ 800 | divided_by: product.featured_image.aspect_ratio | round }}"
+                                        alt="{{ product.featured_image.alt | default: product.title }}"
+                                        fetchpriority="high"
+                                        decoding="async"
+                                        loading="eager">
+
+                                {% if section.settings.show_badge and section.settings.badge_text != blank %}
+                                    <div class="mobile-badge">
+                                        {{ section.settings.badge_text }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+
+
+                        {% for image in product.images limit: section.settings.max_images %}
+                            {% unless forloop.first %}
+                                <div class="carousel-slide">
+                                    <img
+                                            src="{{ image | image_url: width: 800 }}"
+                                            srcset="
+                    {{ image | image_url: width: 480 }} 480w,
+                    {{ image | image_url: width: 800 }} 800w,
+                    {{ image | image_url: width: 1200 }} 1200w
+                  "
+                                            sizes="100vw"
+                                            width="800"
+                                            height="{{ 800 | divided_by: image.aspect_ratio | round }}"
+                                            alt="{{ image.alt | default: product.title }}"
+                                            loading="lazy"
+                                            decoding="async">
+                                </div>
+                            {% endunless %}
+                        {% endfor %}
+                    </div>
+
+                    <!-- Progress bar -->
+                    <div class="carousel-dots">
+                        <div class="progress-bar-container">
+                            <div class="progress-bar" id="progressBar"></div>
+                            <div class="progress-thumb" id="progressThumb" aria-hidden="true"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== SECTION DROITE: INFORMATIONS PRODUIT ===== -->
+            <aside class="product-info-section" data-mobile-align="{{ section.settings.mobile_position_elements }}">
+
+                <!-- AVIS -->
+                {% if section.settings.show_notice %}
+                    <div class="notice-header" data-mobile-align="{{ section.settings.mobile_position_elements }}">
+                        <p class="notice-text">Excellent</p>
+                        <img src="{{ 'trustpilot-notice.png' | asset_url }}"
+                             alt="trustpilot-notice"
+                             class="trustpilot-notice-img"
+                             width="85" height="16">
+                        <p class="notice-text">17.102 avis</p>
+                        <img src="{{ 'trustpilot-logo.png' | asset_url }}"
+                             alt="trustpilot-notice"
+                             class="trustpilot-logo-img"
+                             width="81" height="18">
+                    </div>
+                {%  endif %}
+
+                <!-- Titre Produit & Prix -->
+                <div class="product-header"  data-mobile-align="{{ section.settings.mobile_position_elements }}">
+                    <h1 class="product-title">{{ product.title | capitalize }}</h1>
+                    <div class="product-pricing">
+                        <p class="product-price">{{ product.price | money }}</p>
+                        {% if product.compare_at_price > product.price %}
+                            <p class="product-compare-price">
+                                <span class="original-price">{{ product.compare_at_price | money }}</span>
+                                <span class="discount">
+                  -{{ product.compare_at_price | minus: product.price | times: 100 | divided_by: product.compare_at_price }}%
+                </span>
+                            </p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Description -->
+                {% if section.settings.show_description %}
+                    <section class="product-description">
+                        <div class="description-content">
+                            <div class="description-text">
+                                {{ product.description }}
+                            </div>
+                            <div class="check-list" data-mobile-align="{{ section.settings.mobile_position_elements }}">
+                                <ul class="features-list">
+                                    <li class="feature-item">
+                                        <img src="{{ 'check-icon.svg' | asset_url }}"
+                                             alt="Check"
+                                             class="checkmark-img"
+                                             width="8.4" height="6">
+                                        <p class="feature-text">Lorem ipsum dolor sit amet</p>
+                                    </li>
+                                    <li class="feature-item">
+                                        <img src="{{ 'check-icon.svg' | asset_url }}"
+                                             alt="Check"
+                                             class="checkmark-img"
+                                             width="8.4" height="6">
+                                        <p class="feature-text">Lorem ipsum dolor sit amet</p>
+                                    </li>
+                                    <li class="feature-item">
+                                        <img src="{{ 'check-icon.svg' | asset_url }}"
+                                             alt="Check"
+                                             class="checkmark-img"
+                                             width="8.4" height="6">
+                                        <p class="feature-text">Lorem ipsum dolor sit amet</p>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </section>
+                {% endif %}
+
+                <!-- Boutons variantes -->
+                {% if section.settings.show_card_variant %}
+                    <div class="pricing-container">
+                        <button type="button" class="pricing-card selected" data-variant="1-month" aria-pressed="true" onclick="selectPricing(this, '1-month')">
+                            <div class="card-badge">Découverte</div>
+                            <div class="content">
+                                <div class="duration">1 mois</div>
+
+                                <div class="price">Soit {{ price_1_truncated }}€ / jour</div>
+                            </div>
+                        </button>
+
+                        <button type="button" class="pricing-card best-offer" data-variant="2-month" aria-pressed="false" onclick="selectPricing(this, '2-month')">
+                            <div class="card-badge">Meilleure offre</div>
+                            <div class="content">
+                                <div class="duration-row">
+                                    {% assign savings = variant_1_month.price | times: 2 | minus: variant_2_month.price %}
+                                    {% assign discount_percent = savings | times: 100 | divided_by: variant_1_month.price | divided_by: 2 | round %}
+
+                                    <div class="duration">2 mois</div>
+                                </div>
+                                <div class="price">
+                                    <div class="discount-badge">-{{ discount_percent }}%
+                                    </div>
+                                    Soit {{ price_2_truncated }}€ / jour</div>
+                            </div>
+                        </button>
+                    </div>
+                {% endif %}
+
+
+                <!-- Bouton d'achat -->
+                {% if section.settings.show_buy_button %}
+                    <section class="product-buy-section">
+                        <form action="{{ routes.cart_add_url }}" method="post" enctype="multipart/form-data" class="buy-form">
+                            <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+                            <button type="submit" name="add" class="buy-button"
+                                    {% unless product.available %}disabled{% endunless %}>
+                                {% if product.available %}
+                                    {{ section.settings.buy_button_text }}
+                                    {% if section.settings.buy_button_show_price  %}
+                                        <span class="button-separator">|</span>
+                                        <span class="button-price">{{ product.price | money }}</span>
+                                    {% endif %}
+                                {% else %}
+                                    Produit épuisé
+                                {% endif %}
+                            </button>
+                        </form>
+
+                        <!-- Texte Livraison -->
+                        {% if section.settings.show_stock_text %}
+                            <div class="product-details">
+
+                                {% if product.available %}
+                                    {{ section.settings.stock_text }}
+                                {% else %}
+                                    Épuisé
+                                {% endif %}
+
+                            </div>
+                        {% endif %}
+                    </section>
+                {% endif %}
+
+                <!-- Accordion section -->
+                {% if section.settings.show_accordion %}
+                    <div class="accordion-container">
+                        <!-- Item 1 - Ouvert par défaut -->
+                        {% if section.settings.accordion_1_show %}
+                            <div class="accordion-item {% if section.settings.accordion_1_open_default %}active{% endif %}">
+                                <button class="accordion-header" onclick="toggleAccordion(this)" aria-expanded="{% if section.settings.accordion_1_open_default %}true{% else %}false{% endif %}">
+                                    <h3 class="accordion-title">{{ section.settings.accordion_1_title }}</h3>
+                                    <img src="{{ 'dropdown.svg' | asset_url }}"
+                                         alt="Toggle"
+                                         class="accordion-icon"
+                                         width="24" height="24">
+                                </button>
+                                <div class="accordion-content">
+                                    <div class="accordion-body">
+                                        {{ section.settings.accordion_1_content }}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+
+
+
+                        <!-- Item 2 -->
+                        {% if section.settings.accordion_2_show %}
+                            <div class="accordion-item {% if section.settings.accordion_2_open_default %}active{% endif %}">
+                                <button class="accordion-header" onclick="toggleAccordion(this)" aria-expanded="{% if section.settings.accordion_2_open_default %}true{% else %}false{% endif %}">
+                                    <h3 class="accordion-title">{{ section.settings.accordion_2_title }}</h3>
+                                    <img src="{{ 'dropdown.svg' | asset_url }}"
+                                         alt="Toggle"
+                                         class="accordion-icon"
+                                         width="24" height="24">
+                                </button>
+                                <div class="accordion-content">
+                                    <div class="accordion-body">
+                                        {{ section.settings.accordion_2_content }}
+                                    </div>
+                                </div>
+                            </div>
+
+                        {% endif %}
+
+
+                        <!-- Item 3 -->
+                        {% if section.settings.accordion_3_show %}
+                            <div class="accordion-item {% if section.settings.accordion_3_open_default %}active{% endif %}">
+                                <button class="accordion-header" onclick="toggleAccordion(this)" aria-expanded="{% if section.settings.accordion_3_open_default %}true{% else %}false{% endif %}">
+                                    <h3 class="accordion-title">{{ section.settings.accordion_3_title }}</h3>
+                                    <img src="{{ 'dropdown.svg' | asset_url }}"
+                                         alt="Toggle"
+                                         class="accordion-icon"
+                                         width="24" height="24">
+                                </button>
+                                <div class="accordion-content">
+                                    <div class="accordion-body">
+                                        {{ section.settings.accordion_3_content }}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+
+
+                        <!-- Item 4 -->
+                        {% if section.settings.accordion_4_show %}
+                            <div class="accordion-item {% if section.settings.accordion_4_open_default %}active{% endif %}">
+                                <button class="accordion-header" onclick="toggleAccordion(this)" aria-expanded="{% if section.settings.accordion_4_open_default %}true{% else %}false{% endif %}">
+                                    <h3 class="accordion-title">{{ section.settings.accordion_4_title }}</h3>
+                                    <img src="{{ 'dropdown.svg' | asset_url }}"
+                                         alt="Toggle"
+                                         class="accordion-icon"
+                                         width="24" height="24">
+                                </button>
+                                <div class="accordion-content">
+                                    <div class="accordion-body">
+                                        {{ section.settings.accordion_4_content }}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        <!-- Item 5 -->
+                        {% if section.settings.accordion_5_show %}
+                            <div class="accordion-item {% if section.settings.accordion_5_open_default %}active{% endif %}">
+                                <button class="accordion-header" onclick="toggleAccordion(this)" aria-expanded="{% if section.settings.accordion_5_open_default %}true{% else %}false{% endif %}">
+                                    <h3 class="accordion-title">{{ section.settings.accordion_5_title }}</h3>
+                                    <img src="{{ 'dropdown.svg' | asset_url }}"
+                                         alt="Toggle"
+                                         class="accordion-icon"
+                                         width="24" height="24">
+                                </button>
+                                <div class="accordion-content">
+                                    <div class="accordion-body">
+                                        {{ section.settings.accordion_5_content }}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </aside>
+        </article>
+
+
+
+
+
+    {% else %}
+
+        <div class="no-product">
+            <h3>Aucun produit sélectionné</h3>
+            <p>Utilisez l'éditeur pour choisir un produit à afficher</p>
+        </div>
+
+    {% endif %}
+
+</section>
+
+{% comment %} ===== JAVASCRIPT ===== {% endcomment %}
+<script>
+
+    /* PRIX & VARIANTES */
+
+    function selectPricing(card, variant) {
+        // Reset sélection
+        document.querySelectorAll('.pricing-card').forEach(c => {
+            c.classList.remove('selected');
+            c.setAttribute('aria-pressed', 'false');
+        });
+
+        // Sélection courante
+        card.classList.add('selected');
+        card.setAttribute('aria-pressed', 'true');
+
+        // MAJ variante + prix
+        updateVariant(variant);
+        updateProductPrice(variant);
+        updateBuyButtonPrice(variant);
+    }
+
+    function updateVariant(variant) {
+        const variantInput = document.querySelector('input[name="id"]');
+        if (!variantInput) return;
+
+        const variantIds = {
+            '1-month': '{{ variant_1_month.id }}',
+            '2-month': '{{ variant_2_month.id }}'
+        };
+        variantInput.value = variantIds[variant];
+    }
+
+    function updateProductPrice(variant) {
+        const el = document.querySelector('.product-price');
+        if (!el) return;
+
+        const prices = {
+            '1-month': '{{ variant_1_month.price | money }}',
+            '2-month': '{{ variant_2_month.price | money }}'
+        };
+        el.textContent = prices[variant];
+    }
+
+    function updateBuyButtonPrice(variant) {
+        const el = document.querySelector('.buy-button .button-price');
+        if (!el) return;
+
+        const prices = {
+            '1-month': '{{ variant_1_month.price | money }}',
+            '2-month': '{{ variant_2_month.price | money }}'
+        };
+        el.textContent = prices[variant];
+    }
+
+    /* ACCORDION */
+    function toggleAccordion(header) {
+        const item = header.parentElement;
+        const isActive = item.classList.contains('active');
+        const isMobile = window.innerWidth <= 768;
+
+
+        document.querySelectorAll('.accordion-item').forEach(other => {
+            if (other !== item) {
+                other.classList.remove('active');
+                const h = other.querySelector('.accordion-header');
+                if (h) h.setAttribute('aria-expanded', 'false');
+            }
+        });
+
+
+        const willBeActive = !isActive;
+        item.classList.toggle('active', willBeActive);
+        header.setAttribute('aria-expanded', String(willBeActive));
+
+
+        if (willBeActive && isMobile) {
+
+            setTimeout(() => {
+                const content = item.querySelector('.accordion-content');
+                if (content) {
+                    // Scroll vers le début du contenu avec un petit offset
+                    const headerHeight = header.offsetHeight;
+                    const targetPosition = header.offsetTop - 20; // 20px de marge
+
+                    window.scrollTo({
+                        top: targetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            }, 250);
+        }
+    }
+</script>
+
+
+{% comment %} ===== SCHEMA ===== {% endcomment %}
+{% schema %}
+{
+  "name": "hover",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section Images"
+    },
+    {
+      "type": "product",
+      "id": "featured_product",
+      "label": "Choisir un produit",
+      "info": "Sélectionnez le produit à afficher dans cette section"
+    },
+    {
+      "type": "range",
+      "id": "max_images",
+      "label": "Nombre max d'images dans la galerie",
+      "min": 1,
+      "max": 5,
+      "step": 1,
+      "default": 5
+    },
+    {
+      "type": "select",
+      "id": "hover_main_img_style",
+      "label": "Effets de l'image principale au passage de la souris",
+      "options": [
+        {
+          "value": "none",
+          "label": "Aucun"
+        },
+        {
+          "value": "lift_effect",
+          "label": "Soulèvement au survol"
+        },
+        {
+          "value": "zoom",
+          "label": "Zoom Focus"
+        }
+
+
+      ],
+      "default": "none"
+    },
+    {
+      "type": "select",
+      "id": "hover_gallery_style",
+      "label": "Effets de la galerie au passage de la souris",
+      "options": [
+        {
+          "value": "none",
+          "label": "Aucun"
+        },
+        {
+          "value": "zoom",
+          "label": "Zoom Détail"
+        },
+        {
+          "value": "lightness_zoom",
+          "label": "Zoom Lumineux"
+        },
+        {
+          "value": "inherit",
+          "label": "🔄 Comme l'image principale"
+        }
+
+
+      ],
+      "default": "inherit"
+    },
+
+
+    {
+      "type": "checkbox",
+      "id": "show_badge",
+      "label": "Afficher le badge",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "badge_color",
+      "label": "Couleur du badge",
+      "default": "#F0F3E2"
+    },
+    {
+      "type": "text",
+      "id": "badge_text",
+      "label": "Texte du badge",
+      "default": "Hautement dosé"
+    },
+    {
+      "type": "color",
+      "id": "badge_text_color",
+      "label": "Couleur du texte du badge",
+      "default": "#171714"
+    },
+    {
+      "type": "header",
+      "content": "Header Informations"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_notice",
+      "label": "Afficher les avis",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Couleur du titre",
+      "default": "#171714"
+    },
+    {
+      "type": "color",
+      "id": "price_color",
+      "label": "Couleur du prix",
+      "default": "#171714"
+    },
+
+
+    {
+      "type": "header",
+      "content": "📝 Contenu"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_description",
+      "label": "Afficher la description",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "description_text_size",
+      "label": "Taille du texte description",
+      "options": [
+        {
+          "value": "6px",
+          "label": "Petit"
+        },
+        {
+          "value": "14px",
+          "label": "Normal"
+        },
+        {
+          "value": "17px",
+          "label": "Grand"
+        },
+        {
+          "value": "20px",
+          "label": "Très grand"
+        }
+      ],
+      "default": "14px"
+    },
+    {
+      "type": "color",
+      "id": "description_content",
+      "label": "Couleur du texte",
+      "default": "#171714"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_card_variant",
+      "label": "Afficher les variantes du produits",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "card_variant_background_hover_color",
+      "label": "Couleur du bouton de variantes selectionné",
+      "default": "#E2F2F3"
+    },
+    {
+      "type": "color",
+      "id":"card_badge_variant_background_hover_color",
+      "label": "couleur d'arriere plan du badge",
+      "default": "#C8E4E6"
+
+    },
+    {
+      "type": "color",
+      "id":"card_badge_variant_text_color",
+      "label": "couleur de texte du titre de variante et du badge",
+      "default": "#171714"
+
+    },
+
+    {
+      "type": "header",
+      "content": "Bouton d'achat"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_buy_button",
+      "label": "Afficher le bouton d'achat",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "buy_button_text",
+      "label": "Texte du bouton",
+      "default": "Ajouter au panier"
+    },
+    {
+      "type": "range",
+      "id": "buy_button_text_size",
+      "label": "Taille de texte du bouton d'achat",
+      "min": 10,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "color",
+      "id": "buy_button_color",
+      "label": "Couleur du bouton",
+      "default": "#171714"
+    },
+    {
+      "type": "color",
+      "id": "buy_button_text_color",
+      "label": "Couleur de texte du bouton",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_buy_button_hover",
+      "label": "Activer l'effet hover du bouton",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "buy_button_show_price",
+      "label": "Afficher le prix sur le bouton",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "buy_button_hover_color",
+      "label": "Couleur du boutton au survol de la souris",
+      "default": "#C8E4E6"
+    },
+    {
+      "type": "color",
+      "id": "buy_button_hover_text_color",
+      "label": "Couleur du texte au survol",
+      "default": "#171714"
+    },
+    {
+      "type": "range",
+      "id": "buy_button_border_radius",
+      "label": "Arrondi du bouton",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 100
+    },
+    {
+      "type": "checkbox",
+      "id": "show_stock_text",
+      "label": "Afficher les infos de livraison",
+      "default": true
+    },
+    {
+      "type": "richtext",
+      "id": "stock_text",
+      "label": "Modifier le texte de livraison ",
+      "default": "<p><strong>En stock</strong>, commandez maintenant et soyez <strong>livré le 25 mars</strong></p>"
+    },
+    {
+      "type": "color",
+      "id": "stock_text_color",
+      "label": "Modifier la couleur texte de livraison ",
+      "default": "#171714"
+    },
+    {
+      "type": "radio",
+      "id": "stock_text_position",
+      "label": "Position du texte de de livraison",
+      "options": [
+        {
+          "value": "left",
+          "label": "Gauche"
+        },
+        {
+          "value": "center",
+          "label": "Centre"
+        },
+        {
+          "value": "right",
+          "label": "Droite"
+        }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "header",
+      "content": "Accordion"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_accordion",
+      "label": "Afficher la section accordéon",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Accordion 1"
+    },
+
+    {
+      "type": "checkbox",
+      "id": "accordion_1_show",
+      "label": "Afficher l'accordéon 1",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "accordion_1_title",
+      "label": "Titre de l'accordéon 1",
+      "default": "Bienfaits et Efficacité"
+    },
+    {
+      "type": "richtext",
+      "id": "accordion_1_content",
+      "label": "Contenu de l'accordéon 1",
+      "default": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>"
+    },
+    {
+      "type": "checkbox",
+      "id": "accordion_1_open_default",
+      "label": "Ouvrir par défaut",
+      "default": true,
+      "info": "Si activé, cet accordéon sera ouvert au chargement de la page"
+    },
+    {
+      "type": "header",
+      "content": "Accordion 2"
+    },
+    {
+      "type": "checkbox",
+      "id": "accordion_2_show",
+      "label": "Afficher l'accordéon 2",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "accordion_2_title",
+      "label": "Titre de l'accordéon 2",
+      "default": "Ingrédients"
+    },
+    {
+      "type": "richtext",
+      "id": "accordion_2_content",
+      "label": "Contenu de l'accordéon 2",
+      "default": "<ul><li>Ingrédient actif principal - 500mg</li><li>Vitamine C - 80mg</li><li>Zinc - 15mg</li><li>Magnésium - 200mg</li><li>Excipients naturels</li></ul>"
+    },
+    {
+      "type": "checkbox",
+      "id": "accordion_2_open_default",
+      "label": "Ouvrir par défaut",
+      "default": false
+    },
+
+    {
+      "type": "header",
+      "content": "Accordion 3"
+    },
+    {
+      "type": "checkbox",
+      "id": "accordion_3_show",
+      "label": "Afficher l'accordéon 3",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "accordion_3_title",
+      "label": "Titre de l'accordéon 3",
+      "default": "Utilisation & Précautions"
+    },
+    {
+      "type": "richtext",
+      "id": "accordion_3_content",
+      "label": "Contenu de l'accordéon 3",
+      "default": "<p><strong>Posologie :</strong> Prendre 1 capsule par jour avec un verre d'eau, de préférence le matin.</p><p><strong>Précautions :</strong> Ne pas dépasser la dose recommandée. Tenir hors de portée des enfants. Consulter un professionnel de santé en cas de grossesse ou d'allaitement.</p>"
+    },
+    {
+      "type": "checkbox",
+      "id": "accordion_3_open_default",
+      "label": "Ouvrir par défaut",
+      "default": false
+    },
+
+    {
+      "type": "header",
+      "content": "Accordion 4"
+    },
+    {
+      "type": "checkbox",
+      "id": "accordion_4_show",
+      "label": "Afficher l'accordéon 4",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "accordion_4_title",
+      "label": "Titre de l'accordéon 4",
+      "default": "Certificats & Études"
+    },
+    {
+      "type": "richtext",
+      "id": "accordion_4_content",
+      "label": "Contenu de l'accordéon 4",
+      "default": "<p>• Certifié Bio par Ecocert<br>• Analyse microbiologique conforme<br>• Étude clinique sur 200 participants<br>• Certification GMP (Good Manufacturing Practice)<br>• Test de pureté par laboratoire indépendant</p>"
+    },
+    {
+      "type": "checkbox",
+      "id": "accordion_4_open_default",
+      "label": "Ouvrir par défaut",
+      "default": false
+    },
+
+    {
+      "type": "header",
+      "content": "Accordion 5"
+    },
+    {
+      "type": "checkbox",
+      "id": "accordion_5_show",
+      "label": "Afficher l'accordéon 5",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "accordion_5_title",
+      "label": "Titre de l'accordéon 5",
+      "default": "Livraison & Retour"
+    },
+    {
+      "type": "richtext",
+      "id": "accordion_5_content",
+      "label": "Contenu de l'accordéon 5",
+      "default": "<p><strong>Livraison :</strong> Expédition sous 24h, livraison en 2-3 jours ouvrés en France métropolitaine.</p><p><strong>Retour :</strong> Satisfait ou remboursé sous 30 jours. Frais de retour gratuits pour tout défaut produit.</p>"
+    },
+    {
+      "type": "checkbox",
+      "id": "accordion_5_open_default",
+      "label": "Ouvrir par défaut",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Accordion Style"
+    },
+    {
+      "type": "color",
+      "id": "accordion_title_color",
+      "label": "Couleur des titres",
+      "default": "#171714"
+    },
+    {
+      "type": "color",
+      "id": "accordion_content_color",
+      "label": "Couleur du contenu",
+      "default": "#171714"
+    },
+    {
+      "type": "color",
+      "id": "accordion_border_color",
+      "label": "Couleur des bordures",
+      "default": "#F3F3F3"
+    },
+    {
+      "type": "select",
+      "id": "accordion_title_size",
+      "label": "Taille des titres",
+      "options": [
+        {"value": "14px", "label": "Petit"},
+        {"value": "16px", "label": "Normal"},
+        {"value": "18px", "label": "Grand"}
+      ],
+      "default": "16px"
+    },
+    {
+      "type": "select",
+      "id": "accordion_content_size",
+      "label": "Taille du contenu",
+      "options": [
+        {"value": "12px", "label": "Petit"},
+        {"value": "14px", "label": "Normal"},
+        {"value": "16px", "label": "Grand"}
+      ],
+      "default": "14px"
+    },
+
+    {
+      "type": "header",
+      "content": "📱 Mobile"
+    },
+    {
+      "type": "radio",
+      "id": "mobile_position_elements",
+      "label": "Position des elements mobile",
+      "options": [
+        {
+          "value": "left",
+          "label": "Gauche"
+        },
+        {
+          "value": "center",
+          "label": "Centre"
+        }
+
+      ],
+      "default": "left"
+    }
+  ],
+
+  "presets": [
+    {
+      "name": "hover"
+    }
+  ]
+}
+{% endschema %}
