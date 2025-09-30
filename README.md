@@ -1,6 +1,6 @@
-# Exercice Recrutement – Hover
+# Maquette Produit Shopify 
 
-Intégration d'une section personnalisée sur le thème Dawn pour l'évaluation technique.
+Intégration d'une section personnalisée sur le thème Dawn pour pour une section produits avec variantes.
 
 - **Section créée :** `sections/hover.liquid`
 - **Responsive :** desktop + mobile
