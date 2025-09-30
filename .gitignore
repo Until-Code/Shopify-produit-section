@@ -1,0 +1,18 @@
+# Fichiers système
+.DS_Store
+Thumbs.db
+
+# Shopify CLI cache
+.shopify/
+.shopify-cli.yml
+
+# Fichiers IDE (PhpStorm, WebStorm, IntelliJ)
+.idea/
+*.iml
+modules.xml
+vcs.xml
+material_theme_project_new.xml
+
+# Logs & temporaires
+*.log
+*.tmp
