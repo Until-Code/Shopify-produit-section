@@ -5,7 +5,7 @@ Intégration d'une **section custom** sur le thème **Dawn** pour afficher un pr
 - **Section créée :** `sections/hover.liquid` → affichage produit + variantes + accordéons  
 - **Responsive :** Desktop & Mobile  
 - **Éléments personnalisables :** couleurs, textes, variantes, boutons, accordéons  
-- **Démo en ligne :** [Voir le produit](https://z1znwa-06.myshopify.com/products/gellule)
+
 
 ---
 
